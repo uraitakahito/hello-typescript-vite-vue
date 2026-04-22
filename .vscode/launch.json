@@ -15,10 +15,10 @@
       "webRoot": "${workspaceFolder}"
     },
     {
-      "name": "Chrome: Hoge route",
+      "name": "Chrome: Hello route",
       "type": "chrome",
       "request": "launch",
-      "url": "http://localhost:5173/hoge",
+      "url": "http://localhost:5173/hello",
       "webRoot": "${workspaceFolder}"
     }
   ]

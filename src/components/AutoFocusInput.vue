@@ -19,8 +19,8 @@ const inputEl = ref<HTMLInputElement | null>(null);
 // 比較: この focus() を onMounted ではなく setup 本文に直接書くと、
 //   setup 実行 → inputEl.value は null → ?.focus() は no-op (= focus されない)
 // となり期待した挙動にならない。DOM に触る副作用は onMounted 以降、
-// というのが Vue 3 Composition API の鉄則 (HogeView.vue の
-// `console.log('hello hoge')` は DOM に触らない副作用なので setup 本文
+// というのが Vue 3 Composition API の鉄則 (HelloView.vue の
+// `console.log('hello')` は DOM に触らない副作用なので setup 本文
 // で OK という対比)。
 //
 // `?.` (optional chaining) は、型が null を許容しているため TypeScript が
