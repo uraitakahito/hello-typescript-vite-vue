@@ -1,0 +1,29 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Docker files
+# 開発用の Dockerfile / docker-entrypoint.sh は README 手順に従い
+# uraitakahito/hello-javascript のタグ付きリリースから curl で取得する運用
+# のため、このリポジトリ自身はコミットしない。
+Dockerfile.dev
+docker-entrypoint.sh

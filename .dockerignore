@@ -1,0 +1,13 @@
+# Ignore everything
+*
+
+# Allow only files needed for Docker build
+!package.json
+!package-lock.json
+!.npmrc
+!tsconfig.json
+!vite.config.mts
+!index.html
+!src/
+!public/
+!docker/

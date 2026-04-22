@@ -1,0 +1,40 @@
+# Features of this Dockerfile
+#
+# - Multi-stage build: build stage で npm 依存を入れて Vite + vue-tsc でビルドし、
+#   runtime stage は nginx:alpine に dist/ をコピーして静的配信。
+# - SPA fallback: Vue Router (createWebHistory) が出す `/hoge` 等の URL を
+#   直接叩かれても 404 にしないよう、nginx 側で try_files により index.html
+#   にフォールバックする (docker/nginx.conf 参照)。
+#
+# Build the Docker image:
+#
+#   PROJECT=$(basename `pwd`) && docker image build -f Dockerfile.prod -t $PROJECT-prod-image .
+#
+# Run the Docker container:
+#
+#   docker container run --rm -p 8080:80 --name $PROJECT-prod-container $PROJECT-prod-image
+#
+# Then open http://localhost:8080
+
+# --- Build stage ---
+FROM node:24-bookworm-slim AS build
+
+WORKDIR /app
+
+# .npmrc には legacy-peer-deps=true が入っており、ESLint 10 系の peer 衝突を
+# npm ci がそのまま通せるようにしている。
+COPY package.json package-lock.json .npmrc ./
+RUN npm ci
+
+COPY tsconfig.json vite.config.mts index.html ./
+COPY src/ src/
+COPY public/ public/
+RUN npm run build
+
+# --- Runtime stage ---
+FROM nginx:alpine
+
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
+
+EXPOSE 80

@@ -1,0 +1,69 @@
+// Settings file locations
+//   macOS $HOME/Library/Application\ Support/Code/User/settings.json
+//   Linux $HOME/.config/Code/User/settings.json
+//   Windows %APPDATA%\Code\User\settings.json
+{
+  //
+  // Basic Editing
+  //
+  "editor.wordWrap": "on",
+
+  //
+  // JSON/JSONC
+  //
+  "[json]": {
+    "editor.detectIndentation": true,
+    "editor.formatOnPaste": false,
+    "editor.formatOnSave": false,
+    "editor.formatOnType": false
+  },
+  "[jsonc]": {
+    "editor.detectIndentation": true,
+    "editor.formatOnPaste": false,
+    "editor.formatOnSave": false,
+    "editor.formatOnType": false
+  },
+
+  // Workspace 同梱の TypeScript を使う (npm ci で入るバージョンと揃える)。
+  // https://code.visualstudio.com/docs/typescript/typescript-compiling#_using-newer-typescript-versions
+  "typescript.tsdk": "./node_modules/typescript/lib",
+  // Volar に .vue 以外も含めて型を握らせる (take-over mode)。
+  // Volar v2 以降はこのオプションで TS ファイルの IntelliSense も Volar 経由になる。
+  "vue.server.hybridMode": false,
+
+  "js/ts.implementationsCodeLens.enabled": true,
+  "js/ts.referencesCodeLens.enabled": true,
+  "js/ts.suggest.autoImports": true,
+
+  //
+  // ESLint
+  //
+  // Flat config (eslint.config.mjs) を有効化。
+  "eslint.useFlatConfig": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "vue"
+  ],
+  // https://stackoverflow.com/a/71884347
+  "eslint.format.enable": true,
+
+  "[javascript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSave": true
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSave": true
+  },
+  "[vue]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSave": true
+  }
+}
