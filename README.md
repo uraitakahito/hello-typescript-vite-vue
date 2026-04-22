@@ -63,11 +63,6 @@ npm run dev
 
 ## Test
 
-```console
-npm run test       # watch mode (ファイル変更で自動再実行)
-npm run test:run   # 1 回だけ実行 (CI 用)
-```
-
 `vite.config.mts` 内の `test` ブロックを Vitest が直接読みに行くため、別途 `vitest.config.*` は不要。`@vue/test-utils` の `mount` で SFC を仮想 DOM (`happy-dom`) にマウントしてアサートする。サンプルは `src/components/__tests__/CounterButton.spec.ts` を参照。
 
 ## Production (Docker)
