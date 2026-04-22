@@ -19,6 +19,12 @@ const routes: RouteRecordRaw[] = [
     // 小規模アプリでは差が小さいが、SFC/ページ単位で code-splitting する作法を示す意図。
     component: () => import('../views/HogeView.vue'),
   },
+  {
+    path: '/focus',
+    name: 'focus',
+    // /hoge と同じく動的 import。onMounted + template ref の教材ページ。
+    component: () => import('../views/FocusView.vue'),
+  },
 ];
 
 const router = createRouter({
