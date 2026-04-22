@@ -59,14 +59,7 @@ npm ci
 npm run dev
 ```
 
-ブラウザから `http://localhost:5173/` を開き、Home ルートのカウンタが表示されることを確認。ナビゲーションの「Hello」をクリックすると `/hello` へ、「Focus」をクリックすると `/focus` へ遷移する。`/focus` では `onMounted` と template ref を使って input に自動でフォーカスが当たるサンプルが動く。
-
-## Lint
-
-```console
-npm run lint       # ESLint (flat config, Vue SFC + TypeScript)
-npm run html:lint  # markuplint for index.html
-```
+ブラウザから `http://localhost:5173/` を開き、Home ルートのカウンタが表示されることを確認。
 
 ## Test
 
