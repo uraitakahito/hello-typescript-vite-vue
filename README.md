@@ -59,7 +59,7 @@ npm ci
 npm run dev
 ```
 
-ブラウザから `http://localhost:5173/` を開き、Home ルートのカウンタが表示されることを確認。ナビゲーションの「Hoge」をクリックすると `/hoge` へ遷移する。
+ブラウザから `http://localhost:5173/` を開き、Home ルートのカウンタが表示されることを確認。ナビゲーションの「Hoge」をクリックすると `/hoge` へ、「Focus」をクリックすると `/focus` へ遷移する。`/focus` では `onMounted` と template ref を使って input に自動でフォーカスが当たるサンプルが動く。
 
 ## Lint
 

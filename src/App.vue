@@ -11,6 +11,9 @@ import { RouterLink, RouterView } from 'vue-router';
       <RouterLink to="/hoge">
         Hoge
       </RouterLink>
+      <RouterLink to="/focus">
+        Focus
+      </RouterLink>
     </nav>
   </header>
   <main>
