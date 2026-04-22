@@ -59,7 +59,7 @@ npm ci
 npm run dev
 ```
 
-ブラウザから `http://localhost:5173/` を開き、Home ルートのカウンタが表示されることを確認。ナビゲーションの「Hoge」をクリックすると `/hoge` へ、「Focus」をクリックすると `/focus` へ遷移する。`/focus` では `onMounted` と template ref を使って input に自動でフォーカスが当たるサンプルが動く。
+ブラウザから `http://localhost:5173/` を開き、Home ルートのカウンタが表示されることを確認。ナビゲーションの「Hello」をクリックすると `/hello` へ、「Focus」をクリックすると `/focus` へ遷移する。`/focus` では `onMounted` と template ref を使って input に自動でフォーカスが当たるサンプルが動く。
 
 ## Lint
 
@@ -87,7 +87,7 @@ docker image build -f Dockerfile.prod -t ${PROJECT}-prod-image .
 docker container run --rm -p 8080:80 --name ${PROJECT}-prod-container ${PROJECT}-prod-image
 ```
 
-`http://localhost:8080/` を開く。`/hoge` に直接アクセスしたりリロードしたりしても 404 にならない（nginx 側の `try_files $uri /index.html;` により SPA fallback される）。詳細は `Dockerfile.prod` と `docker/nginx.conf` のヘッダコメント参照。
+`http://localhost:8080/` を開く。`/hello` に直接アクセスしたりリロードしたりしても 404 にならない（nginx 側の `try_files $uri /index.html;` により SPA fallback される）。詳細は `Dockerfile.prod` と `docker/nginx.conf` のヘッダコメント参照。
 
 ## NOTE
 

@@ -2,7 +2,7 @@
 #
 # - Multi-stage build: build stage で npm 依存を入れて Vite + vue-tsc でビルドし、
 #   runtime stage は nginx:alpine に dist/ をコピーして静的配信。
-# - SPA fallback: Vue Router (createWebHistory) が出す `/hoge` 等の URL を
+# - SPA fallback: Vue Router (createWebHistory) が出す `/hello` 等の URL を
 #   直接叩かれても 404 にしないよう、nginx 側で try_files により index.html
 #   にフォールバックする (docker/nginx.conf 参照)。
 #
