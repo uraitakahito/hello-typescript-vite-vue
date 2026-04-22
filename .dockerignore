@@ -11,3 +11,4 @@
 !src/
 !public/
 !docker/
+!docker-entrypoint.sh

@@ -1,23 +1,10 @@
 # hello-typescript-vite-vue
 
 Vite + Vue 3 + TypeScript + Vue Router + Vitest の教材用テンプレート。
-[uraitakahito/hello-typescript-vite](https://github.com/uraitakahito/hello-typescript-vite)（バニラ TypeScript 版）を下敷きに、Vue SFC と Composition API で書き換え、SPA ルーティングとコンポーネントテストを同梱している。
-
-## Stack
-
-| 用途 | パッケージ |
-| --- | --- |
-| UI フレームワーク | Vue 3 (`<script setup>` / Composition API) |
-| ルータ | Vue Router (`createWebHistory`) |
-| ビルド / dev server | Vite + `@vitejs/plugin-vue` |
-| 型チェック | TypeScript + `vue-tsc` |
-| Lint | ESLint (flat config) + `typescript-eslint` + `eslint-plugin-vue` + `eslint-plugin-import-x` + `markuplint` |
-| テスト | Vitest + `@vue/test-utils` + `happy-dom` |
-| 本番配信 | nginx (Dockerfile.prod の多段ビルド) |
 
 ## Development
 
-macOS + Docker Desktop を想定。ローカル Node.js で直接動かす場合は **7.** からどうぞ。
+macOSを想定。
 
 ### 1. Download the Dockerfile and entrypoint
 
