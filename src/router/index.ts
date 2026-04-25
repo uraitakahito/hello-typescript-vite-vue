@@ -9,6 +9,14 @@ const routes: RouteRecordRaw[] = [
     component: HomeView,
   },
   {
+    path: '/counter',
+    name: 'counter',
+    // ref / @click の最小例。元は `/` (HomeView) に直接 CounterButton を貼っていたが、
+    // 他の教材 (/hello, /focus, /todos, /error) と揃えて「1 ルート 1 概念」に分離した。
+    // Home はロゴ + タイトルのみのランディングに戻し、教材は各ルートに置く構造に統一。
+    component: () => import('../views/CounterView.vue'),
+  },
+  {
     path: '/hello',
     name: 'hello',
     // ルート分割: hello ページのコードは初回バンドルに含まれず、遷移時に動的 import される。

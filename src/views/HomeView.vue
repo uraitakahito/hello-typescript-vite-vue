@@ -1,7 +1,8 @@
 <script setup lang="ts">
+// Home はランディング専用 (ロゴ + タイトルのみ)。教材は各ルートに分離してあり、
+// `/counter` `/hello` `/focus` `/todos` `/error` の各ビューが独立した教材を持つ。
 import viteLogo from '/vite.svg';
 import typescriptLogo from '../assets/typescript.svg';
-import CounterButton from '../components/CounterButton.vue';
 </script>
 
 <template>
@@ -27,12 +28,6 @@ import CounterButton from '../components/CounterButton.vue';
       >
     </a>
     <h1>Vite + Vue + TypeScript</h1>
-    <div class="card">
-      <CounterButton />
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite and TypeScript logos to learn more
-    </p>
   </div>
 </template>
 

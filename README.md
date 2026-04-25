@@ -46,7 +46,7 @@ npm ci
 npm run dev
 ```
 
-ブラウザから `http://localhost:5173/` を開き、Home ルートのカウンタが表示されることを確認。
+ブラウザから `http://localhost:5173/` を開き、Home ルートにロゴとタイトルが表示されることを確認 (`/counter` に遷移するとカウンタが動く)。
 
 ## Test
 
