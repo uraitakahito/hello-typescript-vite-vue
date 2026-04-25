@@ -1,15 +1,23 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
+import { createPinia, setActivePinia } from 'pinia';
 import { h } from 'vue';
 import ErrorBoundary from '../ErrorBoundary.vue';
 import BrokenChild from '../BrokenChild.vue';
-import { useErrorLog } from '../../composables/useErrorLog';
+import { useErrorLog } from '../../stores/useErrorLog';
 
-// テスト間で useErrorLog のモジュールスコープ ref を共有しているため、
-// 各テストの独立性を保つために clear() でリセットする。
+// 各テストの先頭で「新しい Pinia インスタンスを active にする」ことで、
+// useErrorLog() が前テストの状態を引き継がないことを宣言的に保証する。
+// 旧版では useErrorLog().clear() を手で呼んで状態リークを防いでいたが、
+// Pinia のテスト作法に乗せると忘れる事故が構造的に発生しなくなる。
+//
+// mount() の global.plugins に createPinia() を渡す方法もあるが、
+// それだと spec 内の直接 useErrorLog() 呼び出し (assert 用) と
+// component 内の解決でインスタンスがズレる可能性があるため、
+// setActivePinia 一本に揃える。
 describe('ErrorBoundary', () => {
   beforeEach(() => {
-    useErrorLog().clear();
+    setActivePinia(createPinia());
   });
 
   it('renders default slot when no error has occurred', () => {
@@ -46,12 +54,17 @@ describe('ErrorBoundary', () => {
 
     await wrapper.find('button').trigger('click');
 
-    const { entries } = useErrorLog();
-    expect(entries.value.length).toBe(1);
-    // Vitest の型推論上 entries.value[0] は ErrorLogEntry | undefined。
-    // length === 1 を assert した直後だが、`?.` で安全に取り出す。
-    expect(entries.value[0]?.layer).toBe('boundary');
-    expect(entries.value[0]?.message).toBe('Boom from BrokenChild');
+    // Pinia setup style ストアのプロパティはアクセス時に自動アンラップされる
+    // ため、外側 (consumer) からは `store.entries` で配列にアクセスでき .value
+    // は不要 (.value が必要なのは store の setup 関数の内側だけ)。
+    // ここでは `entries` を destructure せず store 経由で読むことで、Pinia の
+    // 「state は store オブジェクト経由で読む」基本作法も併せて示す。
+    const errorLog = useErrorLog();
+    expect(errorLog.entries.length).toBe(1);
+    // 型推論上 errorLog.entries[0] は ErrorLogEntry | undefined。
+    // length === 1 を assert した直後だが `?.` で安全に取り出す。
+    expect(errorLog.entries[0]?.layer).toBe('boundary');
+    expect(errorLog.entries[0]?.message).toBe('Boom from BrokenChild');
     wrapper.unmount();
   });
 

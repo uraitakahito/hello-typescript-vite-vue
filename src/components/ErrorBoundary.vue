@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onErrorCaptured, ref } from 'vue';
-import { useErrorLog } from '../composables/useErrorLog';
+import { useErrorLog } from '../stores/useErrorLog';
 
 // React の Error Boundary 相当を Composition API で実装した教材コンポーネント。
 //

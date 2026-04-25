@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
-import { useErrorLog } from '../composables/useErrorLog';
+import { useErrorLog } from '../stores/useErrorLog';
 
 const routes: RouteRecordRaw[] = [
   {

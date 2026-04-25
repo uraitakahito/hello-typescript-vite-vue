@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import ErrorBoundary from '../components/ErrorBoundary.vue';
 import BrokenChild from '../components/BrokenChild.vue';
-import { useErrorLog } from '../composables/useErrorLog';
+import { useErrorLog } from '../stores/useErrorLog';
 
 // 三層防御 (global / boundary / router) のどこで throw が捕捉されるかを
 // 1 ビューで観察する教材。各セクションのボタン or リンクを押すと、画面下の
@@ -22,7 +23,16 @@ import { useErrorLog } from '../composables/useErrorLog';
 // `return false` をコメントアウトすると、(2) のクリックが boundary に加えて
 // global にも記録され、ログに 2 行並ぶようになる。
 
-const { entries, clear } = useErrorLog();
+// Pinia ストアの destructure 罠:
+//   - state (ref ベース) を直接 destructure するとリアクティビティが切れる
+//     例: `const { entries } = useErrorLog()` だと clear() で空配列に
+//     置き換えても、ここで掴んだ古い配列参照は更新されない。
+//   - 解決: state は storeToRefs を経由する (内部 ref への参照を保つ)。
+//   - action (関数) は普通に destructure 可。関数自体に渡される this が
+//     ストアインスタンスにバインドされているため、context が壊れない。
+const errorLog = useErrorLog();
+const { entries } = storeToRefs(errorLog);
+const { clear } = errorLog;
 
 // 境界の外 (= app.config.errorHandler 行き)。
 // イベントハンドラ内の throw は Vue の捕捉経路に乗るため、ここで投げると
