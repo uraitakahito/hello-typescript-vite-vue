@@ -1,12 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 
-// ref() の「二重の意味」:
-//   1) CounterButton で使ったリアクティブ ref (プリミティブ値のラッパ)
-//   2) ここで使う template ref (描画後に DOM 要素が代入される箱)
-// どちらも同じ ref() 関数だが、template 側の `ref="inputEl"` 属性と
-// 変数名が一致したときだけ (2) として働く。
-//
 // 初期値が null なのは、<script setup> が評価される時点では
 // <template> がまだ DOM に mount されておらず、DOM 要素への参照が
 // 存在しないため。型としても HTMLInputElement | null を正直に宣言し、
