@@ -7,7 +7,7 @@ export interface Todo {
   isDone: boolean;
 }
 
-// `useErrorLog` と同じ Pinia setup style ストア。
+// Pinia setup style ストア。
 //
 // 教材としての主眼:
 //
