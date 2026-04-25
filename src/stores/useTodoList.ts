@@ -23,21 +23,6 @@ export interface Todo {
 //   getters → remainingCount / completedCount / isEmpty / isAllDone
 //   actions → add / toggle / remove / clear
 
-// 教材としての主眼:
-//
-//   1. state も getters も `storeToRefs` を経由しないとリアクティビティが切れる。
-//      consumer 側で
-//        const { items, remainingCount } = storeToRefs(store)
-//      とまとめて取り出すのが正しい。直接 destructure (`const { items } = store`)
-//      が壊れるのは、ref / computed の "中身" を取り出した瞬間に reactive な
-//      参照が外れるため。actions (関数) は中身を取り出しても壊れないので、
-//      action だけは普通の destructure で良い。
-//      → https://pinia.vuejs.org/core-concepts/#Destructuring-from-a-Store
-//
-//   2. computed は他の computed を参照できる (依存追跡が連鎖する)。
-//      `isAllDone` は `remainingCount` を読んでおり、items を変えると
-//      remainingCount が再計算され、それが isAllDone も再計算する。
-//      この連鎖は Vue の reactivity が自動で張ってくれる。
 export const useTodoList = defineStore('todoList', () => {
   // --- state --- (https://pinia.vuejs.org/core-concepts/state.html)
   const items = ref<Todo[]>([]);
