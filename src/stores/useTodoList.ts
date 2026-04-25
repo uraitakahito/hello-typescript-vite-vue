@@ -28,9 +28,6 @@ export const useTodoList = defineStore('todoList', () => {
   const items = ref<Todo[]>([]);
 
   // --- getters --- (https://pinia.vuejs.org/core-concepts/getters.html)
-  // setup style では `computed` を作って return すれば getters になる。
-  // template / spec での `.value` 必要性の非対称は store proxy の自動アンラップ
-  // 規則による (詳細はヘッダ参照)。
   const remainingCount = computed(() => items.value.filter((i) => !i.isDone).length);
   const completedCount = computed(() => items.value.filter((i) => i.isDone).length);
   const isEmpty = computed(() => items.value.length === 0);
