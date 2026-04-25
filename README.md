@@ -100,6 +100,28 @@ declare module '*.vue' {
 
 **テストでの状態分離**: `src/components/__tests__/ErrorBoundary.spec.ts` は `beforeEach` で `setActivePinia(createPinia())` を呼び、各テストが新規ストアで走るようにしている。手動 `clear()` を書く必要がない。
 
+### Pinia getters の教材 (`/todos`)
+
+`/error` で導入した Pinia は state + actions のみで、getters (computed) を扱っていなかった。`/todos` ルートでは小さな todo リストを通じ、state / getters / actions の三本柱を 1 ストアにまとめて観察できる。
+
+| 概念 | ファイル | 観察対象 |
+|---|---|---|
+| state | `src/stores/useTodoList.ts` の `items: Ref<Todo[]>` | `add` / `toggle` / `remove` / `clear` で更新される配列 |
+| getters | 同 `remainingCount` / `completedCount` / `isEmpty` / `isAllDone` | state 変化に追随する `computed`。setup style では getters = computed そのもの |
+| actions | 同 `add` / `toggle` / `remove` / `clear` | state を変える関数。`useErrorLog` の `push` / `clear` と同列 |
+
+**setup style における getters = `computed`**: Options style の `getters: { ... }` ブロックに対応するのが、setup style では単に `computed(() => ...)` の return。コードを読む側は「ストアが return しているのが ref か computed か」だけで state / getter を見分ければよい。
+
+**getters も `storeToRefs` 経由が必須**: `const { items, remainingCount } = storeToRefs(store)` で state と getters をまとめて取り出せる。直接 destructure (`const { items } = store`) ではリアクティビティが切れる罠は state と getters の両方で起きる。`useErrorLog` の `entries` で書いた話と同根。
+
+**getter 合成 (computed が computed を参照する)**: `isAllDone` は `!isEmpty.value && remainingCount.value === 0` と、別の computed を参照する。Vue の reactivity が依存追跡を自動で連鎖させるため、`items` を変えると `remainingCount` / `isEmpty` が再計算され、そこから `isAllDone` も再計算される。`!isEmpty` を噛ませているのは「items 空のとき remainingCount === 0 → isAllDone === true」という誤判定を仕様レベルで潰すため。
+
+**store 単独テスト vs mount テスト**: `src/stores/__tests__/useTodoList.spec.ts` は `mount()` を伴わない。`setActivePinia(createPinia())` だけで useXxx() が解決でき、コンポーネントレンダリングや happy-dom も不要 (= 環境依存が少なく速い)。逆に `src/components/__tests__/ErrorBoundary.spec.ts` は mount を伴う統合テスト。両者は「store の振る舞い」と「boundary の振る舞い」を意図的に分けて検証する対比教材になっている。
+
+**store proxy のアクセス規則**: テストの中で `store.isAllDone` と書いて `.value` 不要なのは、Pinia の store proxy が ref / computed の両方を自動アンラップするため。`storeToRefs(store)` で取り出したときだけ `.value` が必要、というのが基本ルール。
+
+**`/error` 教材との対比**: 同じ Pinia でも、`/error` は「3 つの捕捉源 (global / boundary / router) が 1 ストアを共有する」横の demo、`/todos` は「state + getters + actions の三本柱」の縦の demo、と観察対象が違う。
+
 ### `legacy-peer-deps` を `.npmrc` で既定化している理由
 
 ESLint 10 系と `eslint-plugin-import`（`eslint-import-resolver-typescript` から peerOptional で引き込まれる）の peer 範囲が衝突するため。機能的には問題ないので、`.npmrc` に `legacy-peer-deps=true` を書いて `npm install` をそのまま通るようにしている。
