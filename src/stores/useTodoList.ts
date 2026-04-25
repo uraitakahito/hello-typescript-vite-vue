@@ -25,29 +25,7 @@ export interface Todo {
 
 // 教材としての主眼:
 //
-//   1. このストアは「Setup Stores」スタイル (defineStore の第2引数に関数を渡す)。
-//      対する「Option Stores」スタイルは state/getters/actions を別ブロックで宣言する:
-//
-//        // Option Stores — このファイルでは採用していない
-//        defineStore('todoList', {
-//          state:   () => ({ items: [] as Todo[] }),
-//          getters: { remainingCount: (s) => s.items.filter(i => !i.isDone).length },
-//          actions: { add(text) { /* ... */ } },
-//        });
-//
-//        // Setup Stores — このファイルが採用
-//        defineStore('todoList', () => {
-//          const items = ref<Todo[]>([]);
-//          const remainingCount = computed(() => /* ... */);
-//          const add = (text: string) => { /* ... */ };
-//          return { items, remainingCount, add };
-//        });
-//
-//      Setup style には state/getters/actions の見出しブロックが無いため、
-//      return しているのが `ref` か `computed` か関数か、で 3 者を判別する。
-//      → https://pinia.vuejs.org/core-concepts/#Setup-Stores
-//
-//   2. state も getters も `storeToRefs` を経由しないとリアクティビティが切れる。
+//   1. state も getters も `storeToRefs` を経由しないとリアクティビティが切れる。
 //      consumer 側で
 //        const { items, remainingCount } = storeToRefs(store)
 //      とまとめて取り出すのが正しい。直接 destructure (`const { items } = store`)
@@ -56,15 +34,10 @@ export interface Todo {
 //      action だけは普通の destructure で良い。
 //      → https://pinia.vuejs.org/core-concepts/#Destructuring-from-a-Store
 //
-//   3. computed は他の computed を参照できる (依存追跡が連鎖する)。
+//   2. computed は他の computed を参照できる (依存追跡が連鎖する)。
 //      `isAllDone` は `remainingCount` を読んでおり、items を変えると
 //      remainingCount が再計算され、それが isAllDone も再計算する。
 //      この連鎖は Vue の reactivity が自動で張ってくれる。
-//
-//   4. `isEmpty` ガードを噛ませている理由: items 空の状態で
-//        remainingCount === 0 → isAllDone === true
-//      となり「空なのに全完了」と読めてしまう。`!isEmpty` を AND で挟み、
-//      仕様 (1 件以上ある & 全部 done) を守る。仕様を getter 側で表現する例。
 export const useTodoList = defineStore('todoList', () => {
   // --- state --- (https://pinia.vuejs.org/core-concepts/state.html)
   const items = ref<Todo[]>([]);
