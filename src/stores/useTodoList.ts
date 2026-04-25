@@ -31,9 +31,6 @@ export const useTodoList = defineStore('todoList', () => {
   const remainingCount = computed(() => items.value.filter((i) => !i.isDone).length);
   const completedCount = computed(() => items.value.filter((i) => i.isDone).length);
   const isEmpty = computed(() => items.value.length === 0);
-  // getter 合成: 別 computed (`remainingCount`, `isEmpty`) を参照する。
-  // items が変わる → remainingCount / isEmpty が再計算される → ここも再計算、
-  // という連鎖が自動で張られる。
   const isAllDone = computed(() => !isEmpty.value && remainingCount.value === 0);
 
   // --- actions --- (https://pinia.vuejs.org/core-concepts/actions.html)
