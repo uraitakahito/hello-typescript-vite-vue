@@ -5,13 +5,11 @@ import App from './App.vue';
 import router from './router';
 import { useErrorLog } from './stores/useErrorLog';
 
-// createApp:    ルート SFC から Vue アプリケーションインスタンスを生成。
 // use(pinia):   Pinia をプラグインとして登録し、useXxx() でストアを解決可能にする。
 //               useErrorLog() を最初に呼ぶ時点で install 済みである必要があるが、
 //               errorHandler 等の closure は「実行時」にストアを解決するため、
 //               install 順は「最初の呼び出し前」までに済んでいれば良い。
 // use(router):  Vue Router をプラグインとして登録し <RouterView /> / <RouterLink /> を有効化。
-// mount('#app'): index.html の <div id="app"></div> に実 DOM をマウント。
 const app = createApp(App);
 app.use(createPinia());
 

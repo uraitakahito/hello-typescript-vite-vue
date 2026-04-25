@@ -1,10 +1,6 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
-// 各 todo は不変な id を持ち、配列内検索 (toggle / remove) のキーになる。
-// boolean プロパティは ESLint 命名規約 (is|has|can|... + 残りが PascalCase) に
-// 従い `done` ではなく `isDone`。プロパティ名にこのルールが効くのはこの教材で
-// 初登場で、`useErrorLog.ts` には boolean フィールドが無かった。
 export interface Todo {
   id: string;
   text: string;

@@ -9,6 +9,12 @@ const routes: RouteRecordRaw[] = [
     component: HomeView,
   },
   {
+    path: '/counter',
+    name: 'counter',
+    // ref / @click の最小例。
+    component: () => import('../views/CounterView.vue'),
+  },
+  {
     path: '/hello',
     name: 'hello',
     // ルート分割: hello ページのコードは初回バンドルに含まれず、遷移時に動的 import される。
@@ -25,9 +31,6 @@ const routes: RouteRecordRaw[] = [
     path: '/todos',
     name: 'todos',
     // Pinia の三本柱 (state / getters / actions) を観察する教材ビュー。
-    // setup style における getters = `computed` の対応関係、getter 合成、
-    // storeToRefs の作法、store 単独テストをまとめて見せる。
-    // `/error` (3 つの捕捉源が 1 ストアを共有) と異なり、1 ストア 1 ビューで完結。
     component: () => import('../views/TodosView.vue'),
   },
   {
