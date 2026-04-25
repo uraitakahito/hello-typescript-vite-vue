@@ -22,8 +22,6 @@ export interface Todo {
 //   state   → items
 //   getters → remainingCount / completedCount / isEmpty / isAllDone
 //   actions → add / toggle / remove / clear
-//
-// 全体像 (Setup vs Option の選び方含む): https://pinia.vuejs.org/core-concepts/
 
 // 教材としての主眼:
 //
