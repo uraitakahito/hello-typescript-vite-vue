@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
+import { useErrorLog } from '../composables/useErrorLog';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -20,11 +21,43 @@ const routes: RouteRecordRaw[] = [
     // /hello と同じく動的 import。onMounted + template ref の教材ページ。
     component: () => import('../views/FocusView.vue'),
   },
+  {
+    path: '/error',
+    name: 'error',
+    // 三層防御 (global / boundary / router) を観察する教材ビュー。
+    component: () => import('../views/ErrorView.vue'),
+  },
+  {
+    path: '/missing',
+    name: 'missing',
+    // 動的 import の失敗を意図的に起こすルート。createWebHistory で `/missing`
+    // を踏むと、router は component ローダを await し、その Promise が reject
+    // すると router.onError 経由でエラーが流れる。
+    //   - 存在しないファイルパスを書く方法: 型チェック / ビルドで詰まりやすい
+    //   - Promise.reject を返す方法: 失敗を作っているのが明示的で教材として読みやすい
+    // ここでは後者を採用。Lazy<RouteComponent> = () => Promise<RouteComponent> なので
+    // Promise<never> (reject) は型適合する。
+    component: () => Promise.reject(new Error('Simulated dynamic import failure')),
+  },
 ];
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+// router.onError は以下のエラーを受ける:
+//   - 動的 import (lazy route component) の失敗
+//   - navigation guard (beforeEach / beforeEnter 等) 内 throw
+//   - 解決中にスローされた async errors
+// app.config.errorHandler とは別経路で、ビュー内 click handler の throw 等は
+// こちらには届かない (それは global 層側)。
+router.onError((err, to) => {
+  useErrorLog().push({
+    layer: 'router',
+    message: `to=${to.fullPath} ${err instanceof Error ? err.message : String(err)}`,
+    at: Date.now(),
+  });
 });
 
 export default router;

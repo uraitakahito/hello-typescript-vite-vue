@@ -14,6 +14,9 @@ import { RouterLink, RouterView } from 'vue-router';
       <RouterLink to="/focus">
         Focus
       </RouterLink>
+      <RouterLink to="/error">
+        Error
+      </RouterLink>
     </nav>
   </header>
   <main>
