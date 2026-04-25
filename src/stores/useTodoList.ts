@@ -53,9 +53,6 @@ export const useTodoList = defineStore('todoList', () => {
 
   const remove = (id: string): void => {
     // splice で in-place 編集。配列参照を保ったまま reactivity が効く。
-    // `items.value = items.value.filter(...)` のように参照を置換しても
-    // 同じく reactivity は効く。「Vue は in-place 編集も参照置換も追える」
-    // ことを別々の action で書き分けてある (clear は参照置換)。
     const idx = items.value.findIndex((i) => i.id === id);
     if (idx !== -1) items.value.splice(idx, 1);
   };
