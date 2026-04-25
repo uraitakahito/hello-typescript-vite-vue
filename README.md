@@ -16,10 +16,6 @@ chmod 755 docker-entrypoint.sh
 
 ### 2. Build & start the container with Compose
 
-`compose.yml` に build / port publish / bind mount / ssh-agent 転送 / 環境変数を全部宣言してある。`-p 5173:5173` の意図 (Vite dev server を host に公開する port publish) や `ssh-auth.sock` マウント (Docker Desktop for Mac の仮想ソケットで host の ssh-agent を転送) などの解説は `compose.yml` のコメントを参照。
-
-`USER_ID` / `GROUP_ID` という独自名なのは、bash / zsh では `UID` / `GID` が readonly variable で `export UID=...` がエラーになるため。
-
 ```sh
 export USER_ID=$(id -u) GROUP_ID=$(id -g) GH_TOKEN=$(gh auth token)
 docker compose up -d --build
