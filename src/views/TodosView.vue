@@ -8,9 +8,6 @@ import { useTodoList } from '../stores/useTodoList';
 //   - 内部表現は state = Ref<T>、getters = ComputedRef<T> で異なるが、
 //     storeToRefs はどちらも「リアクティブな参照」として consumer 側に渡す。
 //   - template では自動アンラップで `.value` 不要。
-//   - 直接 destructure (`const { items } = store`) ではリアクティビティが
-//     切れる罠は state と getters の両方で起きる (`useErrorLog` の entries
-//     と同根)。
 const store = useTodoList();
 const { items, remainingCount, completedCount, isEmpty, isAllDone } = storeToRefs(store);
 // actions (関数) は this 解決が要らないので直接 destructure で OK。
