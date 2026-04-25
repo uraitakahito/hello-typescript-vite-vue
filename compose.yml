@@ -1,0 +1,73 @@
+# Vite + Vue 3 の dev container 起動を一元化する compose ファイル。
+# 旧運用では README に長い `docker container run ...` をベタ書きしていたが、
+# port / mount / env を宣言的にここへ集約し、起動は
+# `docker compose up -d --build` の 1 行で済むようにする。
+#
+# 前提:
+#   1. Dockerfile.dev / docker-entrypoint.sh は README の手順で curl 取得済み
+#      (uraitakahito/hello-javascript のタグから取得する運用は維持)
+#   2. 起動前に host 側で以下を export しておく:
+#        export USER_ID=$(id -u) GROUP_ID=$(id -g) GH_TOKEN=$(gh auth token)
+#      `UID` / `GID` ではなく独自名なのは、bash / zsh では `UID` / `GID` が
+#      readonly variable で `export UID=...` がエラーになるため。
+
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      args:
+        # 旧 docker build と同じ build-arg を渡す。
+        TZ: Asia/Tokyo
+        # bind mount したファイルの所有権を host と揃えるため、
+        # コンテナ内ユーザの uid / gid を host に合わせる。
+        # 既定 1000 は Linux ホスト一般のフォールバック。
+        user_id: ${USER_ID:-1000}
+        group_id: ${GROUP_ID:-1000}
+    image: hello-typescript-vite-vue-image
+    container_name: hello-typescript-vite-vue-container
+
+    # `docker run --init` 相当。コンテナ内 PID 1 に tini を挟み、
+    # ゾンビプロセス回収と SIGTERM 伝搬を行う保険。
+    init: true
+
+    # Vite dev server を host のブラウザに公開する port publish。
+    # 5173 は vite.config.mts で `strictPort: true` 固定 (port 衝突時に
+    # 黙って 5174 へ逃げず即 fail) なので、host 5173 ←→ コンテナ 5173 は
+    # そのまま繋がるか即エラーかのどちらかになる。
+    ports:
+      - "5173:5173"
+
+    environment:
+      # ssh-agent 転送用ソケットパス。下の bind mount と必ずペアで指定する。
+      SSH_AUTH_SOCK: /run/host-services/ssh-auth.sock
+      # gh CLI 用。host で `gh auth token` が解決できる前提だが、
+      # 未設定でも起動は通す (空文字フォールバック)。
+      GH_TOKEN: ${GH_TOKEN:-}
+
+    volumes:
+      # ssh-agent ソケット: Docker Desktop for Mac の仮想ソケットで、
+      # host の ssh-agent をコンテナ内 git push 等から流用する。
+      # Linux ホストでは host 側パスを書き換える必要がある。
+      - type: bind
+        source: /run/host-services/ssh-auth.sock
+        target: /run/host-services/ssh-auth.sock
+      # リポジトリを /app に bind mount。コード編集が即コンテナに反映される。
+      - type: bind
+        source: .
+        target: /app
+      # zsh history を named volume に永続化 (dotfiles の myzshrc が
+      # /zsh-volume を参照する)。`docker compose down` ではこの volume は
+      # 残り、`docker compose down -v` で削除される。
+      - type: volume
+        source: zsh-history
+        target: /zsh-volume
+
+    # Dockerfile.dev の CMD (`tail -F /dev/null`) は override しない。
+    # 開発は VS Code Attach で /app に入り、コンテナ内 zsh から手で叩く運用。
+
+volumes:
+  zsh-history:
+    # 旧 `docker volume create $PROJECT-zsh-history` と同名を維持。
+    # Compose のデフォルト命名は `<project>_zsh-history` だが、ここは明示。
+    name: hello-typescript-vite-vue-zsh-history

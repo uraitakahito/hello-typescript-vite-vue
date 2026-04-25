@@ -14,27 +14,18 @@ curl -L -O https://raw.githubusercontent.com/uraitakahito/hello-javascript/refs/
 chmod 755 docker-entrypoint.sh
 ```
 
-### 2. Build the image
+### 2. Build & start the container with Compose
+
+`compose.yml` に build / port publish / bind mount / ssh-agent 転送 / 環境変数を全部宣言してある。`-p 5173:5173` の意図 (Vite dev server を host に公開する port publish) や `ssh-auth.sock` マウント (Docker Desktop for Mac の仮想ソケットで host の ssh-agent を転送) などの解説は `compose.yml` のコメントを参照。
+
+`USER_ID` / `GROUP_ID` という独自名なのは、bash / zsh では `UID` / `GID` が readonly variable で `export UID=...` がエラーになるため。
 
 ```sh
-PROJECT=$(basename `pwd`) && docker image build -f Dockerfile.dev -t $PROJECT-image . --build-arg TZ=Asia/Tokyo --build-arg user_id=`id -u` --build-arg group_id=`id -g`
+export USER_ID=$(id -u) GROUP_ID=$(id -g) GH_TOKEN=$(gh auth token)
+docker compose up -d --build
 ```
 
-### 3. (First time only) Create a volume for shell history
-
-```sh
-docker volume create $PROJECT-zsh-history
-```
-
-### 4. Start the container
-
-`-p 5173:5173` は Vite dev server を host 側に公開する port publish。`ssh-auth.sock` のマウントは Docker Desktop for Mac の仮想ソケットで host の ssh-agent を転送している。
-
-```sh
-docker container run -d --rm --init -p 5173:5173 -v /run/host-services/ssh-auth.sock:/run/host-services/ssh-auth.sock -e SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock -e GH_TOKEN=$(gh auth token) --mount type=bind,src=`pwd`,dst=/app --mount type=volume,source=$PROJECT-zsh-history,target=/zsh-volume --name $PROJECT-container $PROJECT-image
-```
-
-### 5. Attach to the container via VS Code
+### 3. Attach to the container via VS Code
 
 1. **Command Palette** を開く (Shift + Command + P)
 2. **Dev Containers: Attach to Running Container** を選択
@@ -42,7 +33,7 @@ docker container run -d --rm --init -p 5173:5173 -v /run/host-services/ssh-auth.
 
 See the [VS Code documentation](https://code.visualstudio.com/docs/devcontainers/attach-container#_attach-to-a-docker-container) for details.
 
-### 6. (First time only) Fix history volume ownership
+### 4. (First time only) Fix history volume ownership
 
 コンテナ内で:
 
@@ -50,7 +41,7 @@ See the [VS Code documentation](https://code.visualstudio.com/docs/devcontainers
 sudo chown -R $(id -u):$(id -g) /zsh-volume
 ```
 
-### 7. Install dependencies and start the dev server
+### 5. Install dependencies and start the dev server
 
 コンテナ内（またはローカル Node.js 環境）で:
 
