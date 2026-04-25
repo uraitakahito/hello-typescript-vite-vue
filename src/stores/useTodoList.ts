@@ -7,45 +7,35 @@ export interface Todo {
   isDone: boolean;
 }
 
-// `useErrorLog` と同じ Pinia setup style ストア。
+// === Pinia とは何か (用語マップ) ===
 //
-// 教材としての主眼:
+// Pinia は Vue 3 公式の状態管理ライブラリ。1 つのストアは 3 種類の要素で構成される:
 //
-//   1. setup style における getters は `computed` そのもの。
-//      Options style の `getters: { ... }` ブロックに 1:1 対応する。
-//      「ストアが return しているのが ref か computed か」だけで
-//      state / getter を見分けられる、という素直さがこの style の利点。
+//   - state    : ストアが持つ生のデータ。Vue の `ref` / `reactive` で宣言する。
+//                https://pinia.vuejs.org/core-concepts/state.html
+//   - getters  : state から導出される派生値 (= 読み取り専用の computed)。
+//                https://pinia.vuejs.org/core-concepts/getters.html
+//   - actions  : state を変更する関数。普通の JS 関数として書ける。
+//                https://pinia.vuejs.org/core-concepts/actions.html
 //
-//   2. getters も state と同じく `storeToRefs` を経由しないとリアクティビティ
-//      が切れる。consumer 側で
-//        const { items, remainingCount } = storeToRefs(store)
-//      とまとめて取り出すのが正しい。`useErrorLog` で entries を直接 destructure
-//      すると壊れる話と完全に同根。
-//
-//   3. computed は他の computed を参照できる (依存追跡が連鎖する)。
-//      `isAllDone` は `remainingCount` を読んでおり、items を変えると
-//      remainingCount が再計算され、それが isAllDone も再計算する。
-//      この連鎖は Vue の reactivity が自動で張ってくれる。
-//
-//   4. `isEmpty` ガードを噛ませている理由: items 空の状態で
-//        remainingCount === 0 → isAllDone === true
-//      となり「空なのに全完了」と読めてしまう。`!isEmpty` を AND で挟み、
-//      仕様 (1 件以上ある & 全部 done) を守る。仕様を getter 側で表現する例。
+// このファイルでの対応:
+//   state   → items
+//   getters → remainingCount / completedCount / isEmpty / isAllDone
+//   actions → add / toggle / remove / clear
+
 export const useTodoList = defineStore('todoList', () => {
+  // --- state --- (https://pinia.vuejs.org/core-concepts/state.html)
   const items = ref<Todo[]>([]);
 
-  // getters (= computed)。setup style では公開 API として return すれば
-  // 外側の template / spec から `.value` 不要 (template) または `.value` 必須 (spec)
-  // で読める、という非対称になる。store proxy 経由 (`store.remainingCount`) なら
-  // どちらの場面でも自動アンラップされる、というのが Pinia のアクセス規則。
+  // --- getters --- (https://pinia.vuejs.org/core-concepts/getters.html)
   const remainingCount = computed(() => items.value.filter((i) => !i.isDone).length);
   const completedCount = computed(() => items.value.filter((i) => i.isDone).length);
   const isEmpty = computed(() => items.value.length === 0);
-  // getter 合成: 別 computed (`remainingCount`, `isEmpty`) を参照する。
-  // items が変わる → remainingCount / isEmpty が再計算される → ここも再計算、
-  // という連鎖が自動で張られる。
   const isAllDone = computed(() => !isEmpty.value && remainingCount.value === 0);
 
+  // --- actions --- (https://pinia.vuejs.org/core-concepts/actions.html)
+  // state を変更する関数。Pinia では this バインドの作法が要らないので、
+  // 普通のアロー関数として書ける (Options style の `actions:` ブロックに相当)。
   const add = (text: string): void => {
     const trimmed = text.trim();
     if (trimmed === '') return;

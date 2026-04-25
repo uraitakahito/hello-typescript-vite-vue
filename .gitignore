@@ -27,5 +27,3 @@ dist-ssr
 # のため、このリポジトリ自身はコミットしない。
 Dockerfile.dev
 docker-entrypoint.sh
-
-tasks
