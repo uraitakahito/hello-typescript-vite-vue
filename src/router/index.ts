@@ -31,9 +31,6 @@ const routes: RouteRecordRaw[] = [
     path: '/todos',
     name: 'todos',
     // Pinia の三本柱 (state / getters / actions) を観察する教材ビュー。
-    // setup style における getters = `computed` の対応関係、getter 合成、
-    // storeToRefs の作法、store 単独テストをまとめて見せる。
-    // `/error` (3 つの捕捉源が 1 ストアを共有) と異なり、1 ストア 1 ビューで完結。
     component: () => import('../views/TodosView.vue'),
   },
   {
