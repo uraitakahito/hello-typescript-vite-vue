@@ -19,12 +19,6 @@ export interface ErrorLogEntry {
 // 三箇所 (main.ts の app.config.errorHandler / ErrorBoundary.vue の onErrorCaptured /
 // router/index.ts の router.onError) が push を呼び、ErrorView.vue が entries を
 // 観察する構造。Pinia ストアは app に install された 1 インスタンスを共有する。
-//
-// 旧版 (src/composables/useErrorLog.ts) ではモジュールスコープ ref をシングルトンに
-// していたが、以下の点で Pinia の方が教材として優れる:
-//   - Vue DevTools の Pinia パネルで状態の推移が可視化できる
-//   - テストで setActivePinia(createPinia()) を beforeEach に書くと、各テストが
-//     完全に独立した新規ストアで走るため手動 clear() が不要になる
 export const useErrorLog = defineStore('errorLog', () => {
   const entries = ref<ErrorLogEntry[]>([]);
 
