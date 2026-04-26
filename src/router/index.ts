@@ -64,6 +64,25 @@ const router = createRouter({
 //   - 解決中にスローされた async errors
 // app.config.errorHandler とは別経路で、ビュー内 click handler の throw 等は
 // こちらには届かない (それは global 層側)。
+//
+// 具体例 (一つに過ぎない): src/views/ErrorView.vue の
+// <RouterLink to="/missing"> をクリックすると、上の routes 配列で
+// `/missing` の component を `() => Promise.reject(...)` と宣言してある
+// ため component ローダが reject し、この onError が発火する。
+//
+// ただし発火源は ErrorView だけではない。別のビューが <RouterLink> や
+// router.push() で失敗ルートへ飛ぶ／将来 navigation guard で throw する／
+// 動的 import が chunk fetch 失敗で reject する、といった全ての経路が
+// ここに集まる。「呼び出し元はどこか」を ahead-of-time に網羅することは
+// できない。
+//
+// だからこそ、push 側 (この router.onError) は呼び出し元を知らず、
+// 観察側 (ErrorView.vue) も router.onError を直接 import せず、両者が
+// Pinia ストア useErrorLog 経由でしか結合しないという疎結合が重要になる。
+// 新しい捕捉経路を増やしても観察側のコードは触らずに済み、観察側を
+// 増やしても捕捉側に手を入れる必要がない (= 三層防御が「層」として独立に
+// 育てられる)。同じ理由で main.ts の app.config.errorHandler /
+// ErrorBoundary.vue の onErrorCaptured も互いと観察側の存在を知らない。
 router.onError((err, to) => {
   useErrorLog().push({
     layer: 'router',

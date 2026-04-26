@@ -50,6 +50,13 @@ const formatTime = (ms: number): string => new Date(ms).toLocaleTimeString();
 
     <section>
       <h2>1. Outside any boundary (global layer)</h2>
+      <!--
+        Vue の捕捉網には乗っているが、どのErrorBoundary にも包まれていない状態。
+        @click は Vue がラップしたリスナとして attach されるため、
+        throw は callWithErrorHandling 経由で拾われるが、
+        親ツリーに onErrorCaptured で止める者が居ないため、
+        main.ts に登録した global 層 (app.config.errorHandler) が受ける。
+      -->
       <button
         type="button"
         @click="throwOutside"
