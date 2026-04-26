@@ -104,6 +104,10 @@ declare module '*.vue' {
 
 `/todos` ルートでは小さな todo リストを通じ、state / getters / actions の三本柱を 1 ストアにまとめて観察できる。
 
+### `nextTick()` の教材 (`/scroll`)
+
+Vue は state を変更しても DOM を**同期的には**更新せず、next tick まで更新をバッファリングしてからまとめて適用する (https://ja.vuejs.org/guide/essentials/reactivity-fundamentals.html#dom-update-timing)。そのため state を変えた直後に DOM サイズ (`scrollHeight` など) を読むと「反映前」の値を使ってしまい、期待した挙動から 1 ステップ遅れる現象が起きる。
+
 ### `legacy-peer-deps` を `.npmrc` で既定化している理由
 
 ESLint 10 系と `eslint-plugin-import`（`eslint-import-resolver-typescript` から peerOptional で引き込まれる）の peer 範囲が衝突するため。機能的には問題ないので、`.npmrc` に `legacy-peer-deps=true` を書いて `npm install` をそのまま通るようにしている。
