@@ -16,17 +16,6 @@ import { nextTick, ref } from 'vue';
 //     - 右 (with tick): await nextTick() を挟んでから同じ操作
 //   をする。click のたびに左だけが末尾より 1 行ぶん上で止まり、右は常に
 //   末尾に追従するのが目視できる。
-//
-// 1 SFC に閉じる理由:
-//   スクロール対象を子コンポーネントへ切り出すと、子要素の DOM 参照を親へ
-//   渡すための defineExpose / useTemplateRef の話が混入し、教材主旨
-//   (nextTick) からブレる。ここでは敢えて 1 ファイルにまとめている。
-//
-// seed 行を入れる理由:
-//   空配列スタートだと box が overflow するまで scroll が起きないため、
-//   最初の数クリックでは左右に差が出ない。box 高さで見える行数を超える
-//   seed (= 10 行) を初期投入することで、1 回目の append から divergence
-//   が観察できる状態にしておく。
 
 const initialLines: string[] = Array.from(
   { length: 10 },
