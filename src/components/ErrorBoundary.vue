@@ -41,11 +41,6 @@ const reset = (): void => {
 </script>
 
 <template>
-  <!--
-    エラーが起きていない間は default slot を描画。
-    エラー後は fallback slot に切り替え、捕捉した error と reset 関数を渡す。
-    fallback が指定されない場合は最低限のテキスト + reset ボタンを出す。
-  -->
   <slot v-if="capturedError === null" />
   <template v-else>
     <slot
