@@ -48,6 +48,11 @@ const reset = (): void => {
       :error="capturedError"
       :reset="reset"
     >
+      <!--
+        <slot> タグの開閉間に書いたコンテンツは Vue の「fallback content」機能。
+        呼び出し側が <template #fallback> を渡さなかった場合に限り、デフォルト
+        表示として描画される (https://vuejs.org/guide/components/slots.html#fallback-content)。
+      -->
       <div class="error-boundary-fallback">
         <p>Something went wrong inside this boundary.</p>
         <button
