@@ -43,11 +43,23 @@ const reset = (): void => {
 <template>
   <slot v-if="capturedError === null" />
   <template v-else>
+    <!--
+      slot の内側は呼び出し側 (親) のスコープで解決されるため、親側からは
+      ErrorBoundary 内部の capturedError / reset には直接触れない。:error /
+      :reset は子から親の slot スコープへ指定値を通す Vue の「scoped slot」機能で、
+      呼び出し側は <template #fallback="{ error, reset }"> として受け取れる
+      (https://vuejs.org/guide/components/slots.html#scoped-slots)。
+    -->
     <slot
       name="fallback"
       :error="capturedError"
       :reset="reset"
     >
+      <!--
+        <slot> タグの開閉間に書いたコンテンツは Vue の「fallback content」機能。
+        呼び出し側が <template #fallback> を渡さなかった場合に限り、デフォルト
+        表示として描画される (https://vuejs.org/guide/components/slots.html#fallback-content)。
+      -->
       <div class="error-boundary-fallback">
         <p>Something went wrong inside this boundary.</p>
         <button
