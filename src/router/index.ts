@@ -28,6 +28,14 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../views/FocusView.vue'),
   },
   {
+    path: '/scroll',
+    name: 'scroll',
+    // reactive な state 変更を起点とした DOM 更新の「反映後」に DOM へ触る
+    // タイミングを学ぶ。
+    // 公式: https://ja.vuejs.org/guide/essentials/reactivity-fundamentals.html#dom-update-timing
+    component: () => import('../views/ScrollView.vue'),
+  },
+  {
     path: '/todos',
     name: 'todos',
     // Pinia の三本柱 (state / getters / actions) を観察する教材ビュー。

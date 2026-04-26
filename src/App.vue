@@ -17,6 +17,9 @@ import { RouterLink, RouterView } from 'vue-router';
       <RouterLink to="/focus">
         Focus
       </RouterLink>
+      <RouterLink to="/scroll">
+        Scroll
+      </RouterLink>
       <RouterLink to="/todos">
         Todos
       </RouterLink>
