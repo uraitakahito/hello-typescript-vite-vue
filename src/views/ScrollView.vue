@@ -48,9 +48,6 @@ const append = async (): Promise<void> => {
   }
 };
 
-// 観察を最初からやり直すための reset。ref への代入なので box 内の
-// <p v-for> も追従して再描画される。scrollTop は DOM 再描画と共に自然に
-// 先頭付近へ戻るため、明示的に 0 を代入する必要はない。
 const clear = (): void => {
   lines.value = [...initialLines];
 };
@@ -81,18 +78,28 @@ const clear = (): void => {
     <div class="boxes">
       <!--
         template ref:
-          <div ref="noTickBoxEl"> の `ref="..."` は HTML の id と紛らわしいが、
-          Vue が予約している特殊な属性。<script setup> では、同名で宣言した
-          ref() 変数と自動的に紐付き、mount 直後に .value へ DOM 要素が入る
-          (unmount 後は null に戻る)。<script> 評価時点では mount 前で .value
-          は null なので、型は HTMLDivElement | null と「正直に」宣言する。
-          append() で `if (noTickBoxEl.value)` のガードを噛ませているのも、
-          この null 可能性に従って TypeScript の narrowing を働かせるため
-          (実行時には click 経由なので必ず非 null だが、型システムは証明
-          できない)。
-          ref() がリアクティブな箱と DOM 参照の両方に使える設計のおかげで、
-          後から watch / computed と組み合わせる場合も同じ作法で扱える。
+          <div ref="noTickBoxEl"> の `ref="..."` は Vue が予約している特殊な属性。
+          <script setup> では、同名で宣言したref() 変数と自動的に紐付き、mount 直後に
+          .value へ DOM 要素が入る(unmount 後は null に戻る)。
           公式: https://ja.vuejs.org/guide/essentials/template-refs.html
+      -->
+      <!--
+        :key="i" を付ける理由:
+          v-for は再描画のたびに「前回の <p> と今回の <p> のどれが同じ要素か」を
+          判定し、一致した key の DOM ノードを再利用する (不一致なら破棄 → 再生成)。
+          key を省くと Vue は位置で in-place patch にフォールバックするため、
+          中間挿入や並び替えで <input> の入力中文字 / focus / scroll など
+          「DOM ノード固有の状態」が別の行に貼り付くバグの温床になる。
+          eslint-plugin-vue の vue/require-v-for-key も省略を error にする。
+
+          index (`i`) を key にしてよいのは、ここの lines が
+            - append-only (push) / clear (全置換) しか起こさず既存要素の index が
+              ずれない
+            - 子が <p>{{ line }}</p> の純テキストで DOM ノード固有状態を持たない
+          の 2 条件を満たすから。中間挿入や並び替えを許す設計なら index key は
+          「ノードと内容のズレ」を起こす (useTodoList が crypto.randomUUID() で id
+          を振っているのはそのため)。
+          公式: https://ja.vuejs.org/api/built-in-special-attributes.html#key
       -->
       <section>
         <h2>without nextTick</h2>
