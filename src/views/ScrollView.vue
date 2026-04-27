@@ -48,9 +48,6 @@ const append = async (): Promise<void> => {
   }
 };
 
-// 観察を最初からやり直すための reset。ref への代入なので box 内の
-// <p v-for> も追従して再描画される。scrollTop は DOM 再描画と共に自然に
-// 先頭付近へ戻るため、明示的に 0 を代入する必要はない。
 const clear = (): void => {
   lines.value = [...initialLines];
 };
