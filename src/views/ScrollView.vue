@@ -83,6 +83,24 @@ const clear = (): void => {
           .value へ DOM 要素が入る(unmount 後は null に戻る)。
           公式: https://ja.vuejs.org/guide/essentials/template-refs.html
       -->
+      <!--
+        :key="i" を付ける理由:
+          v-for は再描画のたびに「前回の <p> と今回の <p> のどれが同じ要素か」を
+          判定し、一致した key の DOM ノードを再利用する (不一致なら破棄 → 再生成)。
+          key を省くと Vue は位置で in-place patch にフォールバックするため、
+          中間挿入や並び替えで <input> の入力中文字 / focus / scroll など
+          「DOM ノード固有の状態」が別の行に貼り付くバグの温床になる。
+          eslint-plugin-vue の vue/require-v-for-key も省略を error にする。
+
+          index (`i`) を key にしてよいのは、ここの lines が
+            - append-only (push) / clear (全置換) しか起こさず既存要素の index が
+              ずれない
+            - 子が <p>{{ line }}</p> の純テキストで DOM ノード固有状態を持たない
+          の 2 条件を満たすから。中間挿入や並び替えを許す設計なら index key は
+          「ノードと内容のズレ」を起こす (useTodoList が crypto.randomUUID() で id
+          を振っているのはそのため)。
+          公式: https://ja.vuejs.org/api/built-in-special-attributes.html#key
+      -->
       <section>
         <h2>without nextTick</h2>
         <div
