@@ -81,8 +81,6 @@ const clear = (): void => {
           <div ref="noTickBoxEl"> の `ref="..."` は Vue が予約している特殊な属性。
           <script setup> では、同名で宣言したref() 変数と自動的に紐付き、mount 直後に
           .value へ DOM 要素が入る(unmount 後は null に戻る)。
-          ref() がリアクティブな箱と DOM 参照の両方に使える設計のおかげで、
-          後から watch / computed と組み合わせる場合も同じ作法で扱える。
           公式: https://ja.vuejs.org/guide/essentials/template-refs.html
       -->
       <section>
