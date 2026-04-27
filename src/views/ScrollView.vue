@@ -23,6 +23,7 @@ const initialLines: string[] = Array.from(
 );
 
 const lines = ref<string[]>([...initialLines]);
+
 const noTickBoxEl = ref<HTMLDivElement | null>(null);
 const withTickBoxEl = ref<HTMLDivElement | null>(null);
 
@@ -78,6 +79,21 @@ const clear = (): void => {
     </div>
 
     <div class="boxes">
+      <!--
+        template ref:
+          <div ref="noTickBoxEl"> の `ref="..."` は HTML の id と紛らわしいが、
+          Vue が予約している特殊な属性。<script setup> では、同名で宣言した
+          ref() 変数と自動的に紐付き、mount 直後に .value へ DOM 要素が入る
+          (unmount 後は null に戻る)。<script> 評価時点では mount 前で .value
+          は null なので、型は HTMLDivElement | null と「正直に」宣言する。
+          append() で `if (noTickBoxEl.value)` のガードを噛ませているのも、
+          この null 可能性に従って TypeScript の narrowing を働かせるため
+          (実行時には click 経由なので必ず非 null だが、型システムは証明
+          できない)。
+          ref() がリアクティブな箱と DOM 参照の両方に使える設計のおかげで、
+          後から watch / computed と組み合わせる場合も同じ作法で扱える。
+          公式: https://ja.vuejs.org/guide/essentials/template-refs.html
+      -->
       <section>
         <h2>without nextTick</h2>
         <div
