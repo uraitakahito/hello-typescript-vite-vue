@@ -36,6 +36,16 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../views/ScrollView.vue'),
   },
   {
+    path: '/computed-cache',
+    name: 'computed-cache',
+    // computed の依存追跡 (track) が成立する条件を学ぶ教材ビュー。
+    // Date.now() のような外部関数だけを read する getter は dep set が空に
+    // なり、初回評価値がキャッシュされたまま invalidate されない、という
+    // 公式ドキュメントの罠を左右並べで観察する。
+    // 公式: https://ja.vuejs.org/guide/essentials/computed.html
+    component: () => import('../views/ComputedCacheView.vue'),
+  },
+  {
     path: '/todos',
     name: 'todos',
     // Pinia の三本柱 (state / getters / actions) を観察する教材ビュー。
