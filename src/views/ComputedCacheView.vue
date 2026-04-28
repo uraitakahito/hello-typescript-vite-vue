@@ -139,17 +139,6 @@ const bumpTick = (): void => {
         </p>
       </section>
     </div>
-
-    <section class="experiment">
-      <h2>触って試す</h2>
-      <p>
-        <code>brokenNow</code> の式を <code>Date.now() + tick.value</code> に
-        書き換える。<code>tick.value</code> を read することで dep set に
-        <code>tick</code> が乗り、tick が更新されるたびに brokenNow も再評価される。
-        Date.now() の値そのものは外部値のままだが、dep が「ある」ことが invalidate
-        のトリガーになる、という構造を体感できる。
-      </p>
-    </section>
   </div>
 </template>
 
@@ -215,10 +204,5 @@ const bumpTick = (): void => {
   color: #888;
   font-size: 0.9em;
   margin: 0.5rem 0 0;
-}
-
-.experiment {
-  border-top: 1px solid #444;
-  padding-top: 1rem;
 }
 </style>
