@@ -20,6 +20,9 @@ import { RouterLink, RouterView } from 'vue-router';
       <RouterLink to="/scroll">
         Scroll
       </RouterLink>
+      <RouterLink to="/computed-cache">
+        Computed
+      </RouterLink>
       <RouterLink to="/todos">
         Todos
       </RouterLink>
