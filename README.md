@@ -110,18 +110,7 @@ Vue は state を変更しても DOM を**同期的には**更新せず、next t
 
 ### `computed` のキャッシュと依存追跡 (`/computed-cache`)
 
-公式ドキュメント (https://ja.vuejs.org/guide/essentials/computed.html) にある「`Date.now()` はリアクティブな依存ではないため、次の算出プロパティは二度と更新されない」ケースを左右並べで観察する。
-
-| 側 | 実装 | 挙動 |
-|---|---|---|
-| ❌ broken | `computed(() => Date.now())` | 初回評価で値が固定。dep set が空集合のまま |
-| ✅ fixed | `ref(Date.now())` を 1 秒ごとに書き戻し、computed が `ref.value` を read | track / trigger に乗るので毎秒再評価される |
-
-両カラムは同一の `setInterval` を共有する。broken の表示が動かない原因を「再レンダーが走っていない」のではなく「依存追跡が空」だと識別するため、画面上に独立な `tick` カウンタも出す (= tick が増え続ける中で broken だけ固定する対比)。
-
-**触って試す**: `brokenNow` の式を `Date.now() + tick.value` に書き換えると、`tick` が dep set に乗るため tick の更新ごとに brokenNow が再評価される。「dep が `Date` 由来ではなく `tick` 経由で増える」と invalidate トリガーが復活する、という構造が見える。
-
-**timer のライフサイクル**: `onMounted` で 1 本だけ `setInterval` を設置し、`onBeforeUnmount` で確実に `clearInterval` する。cleanup を消すとルート遷移後もコールバックが動き続け、HMR で二重起動の元になる (`src/views/ComputedCacheView.vue` のコメント参照)。
+公式ドキュメント (https://ja.vuejs.org/guide/essentials/computed.html) にある「`Date.now()` はリアクティブな依存ではないため、次の算出プロパティは二度と更新されない」ケースを左右並べて観察する。
 
 ### `legacy-peer-deps` を `.npmrc` で既定化している理由
 
