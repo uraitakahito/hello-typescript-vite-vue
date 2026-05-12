@@ -22,8 +22,12 @@ dist-ssr
 *.sw?
 
 # Docker files
-# 開発用の Dockerfile / docker-entrypoint.sh は README 手順に従い
+# 開発用の Dockerfile / docker-entrypoint.sh は `./setup.sh` が
 # uraitakahito/hello-javascript のタグ付きリリースから curl で取得する運用
 # のため、このリポジトリ自身はコミットしない。
 Dockerfile.dev
 docker-entrypoint.sh
+
+# setup.sh が生成するローカル env (USER_ID / GROUP_ID / TZ)。
+# machine-local な値なのでコミットしない。
+.env

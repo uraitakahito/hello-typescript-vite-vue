@@ -1,0 +1,63 @@
+# Vite + Vue 3 本番イメージ (Dockerfile.prod) を nginx で配信する compose ファイル。
+# 教材としても dev と対称に `docker compose -f compose.prod.yaml up` で立ち上がる
+# 形に揃えてある。Dockerfile.prod 自体は multi-stage で:
+#   build stage : node:24-bookworm-slim で `npm ci && npm run build`
+#   runtime     : nginx:alpine に dist/ をコピー + docker/nginx.conf を上書き
+# になっており、`docker/nginx.conf` の `try_files $uri $uri/ /index.html` で
+# Vue Router (createWebHistory) の SPA fallback を成立させている。
+
+name: hello-typescript-vite-vue-prod
+
+services:
+  hello-typescript-vite-vue:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    # タグ付きイメージを生成しておくと、`docker tag ... <registry>/<repo>:<ver>`
+    # で push する流れに繋げやすい (本リポジトリ自体は push しない教材用)。
+    image: hello-typescript-vite-vue:prod
+    container_name: hello-typescript-vite-vue-prod
+
+    # `docker run --init` 相当。nginx は SIGTERM で graceful shutdown するが、
+    # PID 1 が nginx だと一部のシグナル伝搬と zombie 回収が手薄になるため tini を挟む。
+    init: true
+
+    # README / Dockerfile.prod コメントと同じ host 8080 ← container 80 の対応。
+    # nginx:alpine の default listen は 80 で固定 (docker/nginx.conf も `listen 80`)。
+    ports:
+      - "8080:80"
+
+    # ルートファイルシステムを read-only にしてセキュリティを強化する設定。
+    # 本番イメージの中身を変更不可にすることで、侵入後の改竄面を減らす。
+    # ただし nginx は起動時に下記 2 箇所への書き込みが必要なので、
+    # tmpfs で「メモリ上の書き込み可能領域」だけ確保する:
+    #   - /var/cache/nginx: nginx の client_body_temp / proxy_temp 等の作業領域
+    #   - /var/run       : nginx.pid (master プロセスの PID ファイル)
+    # この 2 箇所以外への書き込みは全部失敗する = read-only の効果が残る。
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+
+    # healthcheck で nginx の生存を継続的に確認する。
+    #   - `wget --spider` はボディを取得せず HEAD 相当を投げる軽量プローブ
+    #   - URL を `/` にしているのは SPA fallback で 200 が返るのが保証されているから
+    #     (`docker/nginx.conf` の `try_files $uri $uri/ /index.html` が必ず index.html に
+    #     落ちる)
+    #   - 30s 間隔 / 5s タイムアウト / 3 回連続失敗で unhealthy。`start_period: 5s` で
+    #     起動直後の数秒は失敗を unhealthy にカウントしない。
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+    # `unless-stopped` を選んでいる理由:
+    #   - `no`            : 落ちっぱなしになる (教材以外では普通選ばない)
+    #   - `on-failure`    : exit code 0 では再起動しない (nginx 自死には弱い)
+    #   - `always`        : 手で `docker stop` しても Docker daemon 再起動で勝手に上がる
+    #   - `unless-stopped`: 手で stop したものは上げない / 異常終了からは上げる
+    # 開発機で `docker compose down` した後に Docker daemon 再起動で勝手に container が
+    # 立ち上がるのは混乱の元なので `unless-stopped` が無難。
+    restart: unless-stopped

@@ -1,68 +1,43 @@
 # hello-typescript-vite-vue
 
-Vite + Vue 3 + TypeScript + Vue Router + Vitest の教材用テンプレート。
+Vite + Vue 3 + TypeScript + Vue Router + Pinia + Vitest の教材用テンプレート。
 
-## Development
-
-macOSを想定。
-
-### 1. Download the Dockerfile and entrypoint
+## Setup
 
 ```sh
-curl -L -O https://raw.githubusercontent.com/uraitakahito/hello-javascript/refs/tags/1.2.5/Dockerfile.dev
-curl -L -O https://raw.githubusercontent.com/uraitakahito/hello-javascript/refs/tags/1.2.5/docker-entrypoint.sh
-chmod 755 docker-entrypoint.sh
+./setup.sh
 ```
 
-### 2. Build & start the container with Compose
+`Dockerfile.dev` / `docker-entrypoint.sh` を `uraitakahito/hello-javascript` の
+タグから取得し、`.env` (USER_ID / GROUP_ID / TZ) を生成する。生成物 3 つは
+`.gitignore` 済み。
+
+### Development Environment
+
+詳細は [docs/development-environment.md](docs/development-environment.md)。
 
 ```sh
-export USER_ID=$(id -u) GROUP_ID=$(id -g) GH_TOKEN=$(gh auth token)
-docker compose up -d --build
+GH_TOKEN=$(gh auth token) docker compose -f compose.dev.yaml up -d --build
 ```
 
-### 3. Attach to the container via VS Code
+### Production Environment
 
-1. **Command Palette** を開く (Shift + Command + P)
-2. **Dev Containers: Attach to Running Container** を選択
-3. `/app` を開く
-
-See the [VS Code documentation](https://code.visualstudio.com/docs/devcontainers/attach-container#_attach-to-a-docker-container) for details.
-
-### 4. (First time only) Fix history volume ownership
-
-コンテナ内で:
+詳細は [docs/production-environment.md](docs/production-environment.md)。
 
 ```sh
-sudo chown -R $(id -u):$(id -g) /zsh-volume
+docker compose -f compose.prod.yaml up -d --build
 ```
-
-### 5. Install dependencies and start the dev server
-
-コンテナ内（またはローカル Node.js 環境）で:
-
-```sh
-npm ci
-npm run dev
-```
-
-ブラウザから `http://localhost:5173/` を開き、Home ルートにロゴとタイトルが表示されることを確認 (`/counter` に遷移するとカウンタが動く)。
 
 ## Test
 
-`vite.config.mts` 内の `test` ブロックを Vitest が直接読みに行くため、別途 `vitest.config.*` は不要。`@vue/test-utils` の `mount` で SFC を仮想 DOM (`happy-dom`) にマウントしてアサートする。サンプルは `src/components/__tests__/CounterButton.spec.ts` を参照。
+`vite.config.mts` 内の `test` ブロックを Vitest が直接読みに行くため、別途
+`vitest.config.*` は不要。`@vue/test-utils` の `mount` で SFC を仮想 DOM
+(`happy-dom`) にマウントしてアサートする。サンプルは
+`src/components/__tests__/CounterButton.spec.ts` を参照。
 
-## Production (Docker)
-
-nginx で静的配信するビルド＆ラン手順。
-
-```console
-PROJECT=$(basename `pwd`)
-docker image build -f Dockerfile.prod -t ${PROJECT}-prod-image .
-docker container run --rm -p 8080:80 --name ${PROJECT}-prod-container ${PROJECT}-prod-image
+```sh
+npm run test:run
 ```
-
-`http://localhost:8080/` を開く。`/hello` に直接アクセスしたりリロードしたりしても 404 にならない（nginx 側の `try_files $uri /index.html;` により SPA fallback される）。詳細は `Dockerfile.prod` と `docker/nginx.conf` のヘッダコメント参照。
 
 ## NOTE
 

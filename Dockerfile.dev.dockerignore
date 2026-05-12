@@ -1,0 +1,12 @@
+# Dockerfile.dev 専用の dockerignore。BuildKit は `<Dockerfile>.dockerignore`
+# が存在する場合、ルートの `.dockerignore` ではなくこちらを優先して読む。
+# ref: https://docs.docker.com/build/concepts/context/#dockerignore-files
+#
+# Dockerfile.dev は実体としては docker-entrypoint.sh しか COPY しない
+# (npm 依存 / src は bind mount 経由でコンテナに見せる運用) ので、
+# `*` で全部 ignore し、docker-entrypoint.sh だけ通す形が最小。
+# Ignore everything
+*
+
+# Allow only files needed for Docker build
+!docker-entrypoint.sh
