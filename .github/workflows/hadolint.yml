@@ -8,8 +8,9 @@ on:
   pull_request:
     branches: [ "main", "develop" ]
     paths:
-      - 'Dockerfile.*'
+      - 'Dockerfile.prod'
       - '.hadolint.yaml'
+      - '.github/workflows/hadolint.yml'
 
 permissions:
   contents: read
@@ -25,5 +26,5 @@ jobs:
       - name: Run hadolint
         uses: hadolint/hadolint-action@2332a7b74a6de0dda2e2221d575162eba76ba5e5 # v3.3.0
         with:
-          dockerfile: "Dockerfile.*"
+          dockerfile: "Dockerfile.prod"
           failure-threshold: error

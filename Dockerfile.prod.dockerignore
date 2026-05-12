@@ -1,0 +1,23 @@
+# Dockerfile.prod 専用の dockerignore。BuildKit は `<Dockerfile>.dockerignore`
+# が存在する場合、ルートの `.dockerignore` ではなくこちらを優先して読む。
+# ref: https://docs.docker.com/build/concepts/context/#dockerignore-files
+#
+# Dockerfile.prod が COPY するのは下記のみ:
+#   - 依存解決: package.json / package-lock.json / .npmrc
+#   - ビルド入力: tsconfig.json / vite.config.mts / index.html / src/ / public/
+#   - nginx 設定: docker/nginx.conf
+# それ以外 (node_modules, dist, dev 用ファイル等) は context に乗せたくないので
+# `*` で全部 ignore してから必要なものだけ allowlist する。
+# Ignore everything
+*
+
+# Allow only files needed for Docker build
+!package.json
+!package-lock.json
+!.npmrc
+!tsconfig.json
+!vite.config.mts
+!index.html
+!src/
+!public/
+!docker/
